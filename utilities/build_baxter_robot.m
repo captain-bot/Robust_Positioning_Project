@@ -1,4 +1,4 @@
-function [rbt] = build_robot()
+function [rbt] = build_baxter_robot()
     ak = [0.069 0 0.069 0 0.010 0 0];
     dk = [0.27035 0 0.36435 0 0.37429 0 0.254525];
     alpk = pi*[-1/2 1/2 -1/2 1/2 -1/2 1/2 0];

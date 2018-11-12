@@ -19,7 +19,7 @@ classdef mycls
         %///////////////////////////////////////////////////////////////
         %          Compute forward kinematics and jacobian
         %///////////////////////////////////////////////////////////////
-        function [all_trns, jacobian_mat] = frdkin_jaco(ang, end_frame)
+        function [transformation_mats, jacobian_mat] = frdkin_jaco(ang, end_frame)
             % Compute forward kinematics
             transformation_mats = mycls.forward_kinematics(ang, end_frame);
             % Compute jacobian
@@ -94,7 +94,7 @@ classdef mycls
         function [robust_sol, ik_array, Iindex, min_max_val] = cmp_PRobust(end_frame, elbw_up)
             % Load IK Solutions
             % Note: we took solution that are 0.01 radians apart form their respetive            
-            str_join = ["data_files/left_ik", num2str(solnum), ".txt"];
+            str_join = ["../utilities/data_files/left_ik", num2str(solnum), ".txt"];
             str = join(str_join, "");
             ik_array = load(str);
 
@@ -130,7 +130,7 @@ classdef mycls
             % Note: we took solution that are 0.01 radians apart form their
             % respetive
             
-            str_join = ["data_files/left_ik", num2str(1), ".txt"];
+            str_join = ["../utilities/data_files/left_ik", num2str(1), ".txt"];
             str = join(str_join, "");
             ik_array = load(str);
 
@@ -139,6 +139,7 @@ classdef mycls
             % If want to Work with Elbow Up solutions only
             if elbw_up
                 ik_array = mycls.only_elbw_up(ik_array);
+                mycls.check_jl(ik_array);
             end
             %-------------------------------------------------------------
                 
@@ -254,13 +255,14 @@ classdef mycls
         %               Check Joint Limits
         %////////////////////////////////////////////////
         function [] = check_jl(array_sol)
+            tol = 1e-5;
             limit_flag = 0;
             valid_sol = 0;
             valid_sol_array = zeros(1, size(array_sol, 2));
             for i = 1:size(array_sol, 1)
                 for j = 1:size(array_sol, 2)
                     % check the limits
-                    if array_sol(i, j)-tol < mycls.limits(j, 1) || array_sol(i, j)+tol > mycls.limits(j, 2)
+                    if array_sol(i, j)-tol < mycls.joint_limits(j, 1) || array_sol(i, j)+tol > mycls.joint_limits(j, 2)
                         fprintf('joint %d limit exceeded ', j);
                         fprintf('solution number %d\n', i);
                         limit_flag = 1;

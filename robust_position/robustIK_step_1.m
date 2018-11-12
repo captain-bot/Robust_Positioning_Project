@@ -2,6 +2,8 @@ clc
 clear
 close all
 
+addpath('../utilities');
+
 % Provide end effector configuration and hovering distance
 hov = 0;
 position = [0.71305, 0.378638, 0.30];
