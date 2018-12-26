@@ -89543,6 +89543,7 @@ int main()
     	    nsize++;
   	 }
 	file_.close();
+        printf("nsize value: %d", nsize);
 
 	/* Reopen and start reading line by line*/
 	/* Input : Number of elements in a line */
@@ -89558,6 +89559,7 @@ int main()
 			cnfig.push_back(b);
 			cnt++;
 		}
+		
 		myIKcompute(cnfig, solnum);
 		cnfig.clear();
 		solnum++;
