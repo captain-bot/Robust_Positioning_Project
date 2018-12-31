@@ -4,7 +4,11 @@ import csv
 
 FILE_PATH = "/home/nobug-ros/dev_research/Robust_Positioning_Project/ros_implementation/"
 FILE_NAME = "datafile.csv"
+RES_FILE_NAME = "result2.csv"
 config_num = 0
+
+w = csv.writer(open(FILE_PATH + RES_FILE_NAME, 'a'))
+w.writerow(['px', 'py', 'pz', 'qx', 'qy', 'qz', 'qw', 'max_pose_err', 'min_pose_err'])
 
 with open(FILE_PATH + FILE_NAME, "r") as f:
     reader = csv.reader(f)
@@ -25,6 +29,10 @@ with open(FILE_PATH + FILE_NAME, "r") as f:
             if len(err_list) > 0:
                 print("Minimum Error is {}m at IK num {}".format(np.min(err_list), np.argmin(err_list)))
                 print("Maximum Error is {}m at IK num {}".format(np.max(err_list), np.argmax(err_list)))
+                result = pd + qd
+                result.append(np.max(err_list))
+                result.append(np.min(err_list))
+                w.writerow(result)
             else:
                 print("Error can not be found for the given pose")
             print("=================================")

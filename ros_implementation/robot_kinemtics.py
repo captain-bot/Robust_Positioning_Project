@@ -1,14 +1,13 @@
 import numpy as np
 import math
 import copy
-import os
 import ikModule
 
 
 class Pose3d(object):
     def __init__(self):
-        self._p = []
-        self._q = []
+        self._p = list()
+        self._q = list()
 
     def set_position(self, position):
         self._p = position
@@ -55,7 +54,7 @@ class RobotKin(object):
         n = trans_upto.shape[0]
         z_i = np.zeros((3, n))
         o_i = np.zeros((3, n))
-        jacob = np.zeros((6, n))
+        jacob = np.zeros((6, n-1))
 
         z_i[:, 0] = self._base[0:3, 2]
         o_i[:, 0] = self._base[0:3, 3]
@@ -94,8 +93,12 @@ class PoseErrBound(RobotKin):
             jp = kwargs['jp']
         else:
             th = self.get_one_jointsol()
-            manipulator_jac = self.analytic_jacobian(th)
-            jp = manipulator_jac[:3, :]
+            if len(th) > 0:
+                manipulator_jac = self.analytic_jacobian(th)
+                jp = manipulator_jac[:3, :]
+            else:
+                print("No IK found: unable to compute position_err_bound\n")
+                return 0
         w, v = np.linalg.eig(np.dot(jp, jp.T))
         max_id = np.argmax(w)
         max_eig = w[max_id]
@@ -107,8 +110,12 @@ class PoseErrBound(RobotKin):
             jr = kwargs['jr']
         else:
             th = self.get_one_jointsol()
-            manipulator_jac = self.analytic_jacobian(th)
-            jr = manipulator_jac[3:, :]
+            if len(th) > 0:
+                manipulator_jac = self.analytic_jacobian(th)
+                jr = manipulator_jac[3:, :]
+            else:
+                print("No IK found: unable to compute rotation_err_bound\n")
+                return 0
         qd = np.array(copy.deepcopy(self._des_config._q))
         Hd = self.skew_quat(qd)
         w, v = np.linalg.eig(np.dot(jr, jr.T))
@@ -119,20 +126,49 @@ class PoseErrBound(RobotKin):
         q_star = qd + np.dot(v_vec.T, Hd)
         q_star = q_star/self.norm(q_star)
         worst_rot_err = np.arccos(np.dot(q_star, qd.T))
-        return worst_rot_err
+        return worst_rot_err, q_star
 
     # Pose error bound
     def pose_error_bound(self, peg_len=0.1):
         th = self.get_one_jointsol()
-        manipulator_jac = self.analytic_jacobian(th)
-        return self.position_err_bound(jp=manipulator_jac[:3, :]) + peg_len * self.rotation_err_bound(jr=manipulator_jac[3:, :])
+        if len(th) > 0:
+            manipulator_jac = self.analytic_jacobian(th)
+            return self.position_err_bound(jp=manipulator_jac[:3, :]) + peg_len * self.rotation_err_bound(jr=manipulator_jac[3:, :])
+        else:
+            print("No IK found: unable to compute pose_err_bound\n")
+            return 0
+
+    # Compute Robust IK
+    # This is only for peg tip position error
+    def multi_pose_err(self, config_num, peg_len):
+        self.ikfast_ip_quat()
+        pose_err_list = list()
+        if self.solve_ikfast(config_num):
+            file = open("ik_sol_config" + str(config_num) + ".txt", "r")
+            for line in file:
+                th = list()
+                for ele in line.split(","):
+                    th.append(float(ele))
+                manipulator_jac = self.analytic_jacobian(th)
+                position_err = self.position_err_bound(jp=manipulator_jac[:3, :])
+                rotation_err, wrst_quat = self.rotation_err_bound(jr=manipulator_jac[3:, :])
+                wrst_rotm = self.unitquat2rotm(wrst_quat)
+                des_rotm = self.unitquat2rotm(self._des_config._q)
+                ang = np.arccos(np.dot(des_rotm[:, 2], wrst_rotm[:, 2]))
+                pose_err = position_err + peg_len*ang
+                pose_err_list.append(pose_err)
+            # min_pose_err = min(pose_err_list)
+            # return min_pose_err.index(min(min_pose_err))
+            return pose_err_list
+        else:
+            return []
 
     # Adjust ee_pose for IKFast input
     def ikfast_ip_quat(self):
+        print("desired quat: {}".format(self._des_config._q))
         ee_rotm = self.unitquat2rotm(np.array(self._des_config._q))
         ee_position = np.array(self._des_config._p).reshape((3, 1))
         ee_pose = np.vstack((np.hstack((ee_rotm, ee_position)), np.array([0, 0, 0, 1]).reshape(1, 4)))
-        # print(ee_rotm)
         ikfast_pose = np.dot(self._premult_ikfast, ee_pose)
         ikfast_pose[:3, 3] = ikfast_pose[:3, 3] - self._ikfast_exlen*ikfast_pose[:3, 2]
         ikfast_pose_flattened = ikfast_pose[:3, :4].reshape(12, ).tolist()
@@ -155,25 +191,27 @@ class PoseErrBound(RobotKin):
     # Pick one joint solution given ee_pose
     def get_one_jointsol(self, config_num=1):
         self.ikfast_ip_quat()
-        self.solve_ikfast()
-        # Read first joint solution
-        file = open("ik_sol_config" + str(config_num) + ".txt", "r")
-        th = list()
-        for line in file:
-            for ele in line.split(","):
-                th.append(float(ele))
-            break
-        return th
+        if self.solve_ikfast(config_num):
+            # Read first joint solution
+            file = open("ik_sol_config" + str(config_num) + ".txt", "r")
+            th = list()
+            for line in file:
+                for ele in line.split(","):
+                    th.append(float(ele))
+                break
+            return th
+        else:
+            return []
 
     # Solve for multiple IKs
     @staticmethod
-    def solve_ikfast():
+    def solve_ikfast(config_num):
         file = open("ikfastinput.txt", "r")
         ikfast_input_list = list()
         for line in file:
             for ele in line.split():
                 ikfast_input_list.append(float(ele))
-        ikModule.compIKs(1, ikfast_input_list)
+        return ikModule.compIKs(config_num, ikfast_input_list)
 
     # Compute skew-symmetric quaternion
     @staticmethod
