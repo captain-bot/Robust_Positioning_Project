@@ -38,6 +38,6 @@ with open(FILE_PATH + FILE_NAME, "r") as f:
             print("=================================")
             del b
         config_num += 1
-        # if config_num > 1:
-        #     break
+        if config_num > 1:
+            break
 
