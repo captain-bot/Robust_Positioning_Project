@@ -21,7 +21,7 @@ p_des = T(1:3, 4, end);
 
 % Compute spatial jacobian
 Tnew = T(:, :, 2:end);
-jacob = jacb_spatial(Tnew);
+jacob = mycls.jacb_spatial(Tnew, T(:, :, 1));
 
 % Compute position error bound
 mu = 0;

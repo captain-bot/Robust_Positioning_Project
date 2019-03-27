@@ -3,7 +3,8 @@ classdef mycls
         base = translation(0.024645, 0.219645, 0.118588)*rot_z(pi/4)*translation(0.055695, 0, 0.011038);
         ak = [0.069 0 0.069 0 0.010 0 0];
         alpk = [-pi/2 pi/2 -pi/2 pi/2 -pi/2 pi/2 0];
-        dk = [0.27035 0 (0.102 + 0.26242) 0 (0.10359 + 0.2707) 0 (0.115975 + 0.11355)];
+        % dk = [0.27035 0 (0.102 + 0.26242) 0 (0.10359 + 0.2707) 0 (0.115975 + 0.11355)];
+        dk = [0.27035 0 0.36435 0 0.37429 0 0.2295];
         
         % Provide the joint limits (clo1 -> min and col2 -> max)
         joint_limits = [-1.7016	1.7016;
@@ -92,6 +93,7 @@ classdef mycls
         %               Compute Robust Position Joint Angles
         %/////////////////////////////////////////////////////////////////
         function [robust_sol, ik_array, Iindex, min_max_val] = cmp_PRobust(end_frame, elbw_up)
+	    solnum = 1;
             % Load IK Solutions
             % Note: we took solution that are 0.01 radians apart form their respetive            
             str_join = ["../utilities/data_files/left_ik", num2str(solnum), ".txt"];

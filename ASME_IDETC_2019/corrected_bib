@@ -1,0 +1,38 @@
+% This file was created with JabRef 2.10.
+% Encoding: UTF-8
+
+
+@Article{Meggiolaro1998,
+  Title                    = {Identification and compensation of geometric and elastic errors in large manipulators: application to a high accuracy medical robot},
+  Author                   = {M. Meggiolaro and C. Mavroidis and S. Dubowsky},
+  Journal                  = {Proceedings of the 25th Biennial Mechanisms Conference, ASME},
+  Year                     = {1998},
+  Note                     = {Atlanta},
+
+  Owner                    = {nobug-ros},
+  Timestamp                = {2019.03.04}
+}
+
+@Conference{Sinha2019,
+  Title                    = {Geometric Search Based Inverse Kinematics of 7-DoF Redundant Manipulator with Multiple Joint Offsets},
+  Author                   = {Anirban Sinha and Nilanjan Chakraborty},
+  Booktitle                = {International Conference on Robotics and Automation},
+  Year                     = {To appear in May 2019},
+
+  Owner                    = {nobug-ros},
+  Timestamp                = {2019.03.04}
+}
+
+@Article{Sinha2019a,
+  Title                    = {Geometric Search Based Inverse Kinematics of 7-DoF Redundant Manipulator with Multiple Joint Offsets},
+  Author                   = {Anirban Sinha and Nilanjan Chakraborty},
+  Journal                  = {IEEE International Conference on Robotics and Automation},
+  Year                     = {2019},
+
+  Month                    = {May},
+  Note                     = {Montreal, Canada},
+
+  Owner                    = {nobug-ros},
+  Timestamp                = {2019.03.04}
+}
+
