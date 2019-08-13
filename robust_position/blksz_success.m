@@ -8,9 +8,9 @@ success_wor = [90.30, 87.70, 84.57, 82.06, 76.83, 71.79, 66.57, 60.80];
 block_sz = 2*[0.029, 0.0295, 0.0300, 0.0305, 0.0310, 0.0315, 0.0320, 0.0325];
 
 % Plot the result
-plot(block_sz, success_rob, 'o-', 'MarkerFaceColor', 'b')
-hold on
-plot(block_sz, success_wor, 'o-', 'MarkerFaceColor', 'r')
+plot(block_sz, success_rob, 'bo-', 'MarkerFaceColor', 'b');
+hold on;
+plot(block_sz, success_wor, 'ro-', 'MarkerFaceColor', 'r');
 xlim([0.057, 0.066])
 xlabel('Block width [m]')
 ylabel('Success rate [%]')

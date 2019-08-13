@@ -3,7 +3,7 @@ clear
 close all
 
 % bt = 0.029;
-bt = 0.029;
+bt = 0.028;
 blk_ht = 2*bt;
 
 % Left Gripper Plate vertices in its body frame

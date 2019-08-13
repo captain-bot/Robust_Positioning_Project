@@ -2,10 +2,10 @@ clc
 clear
 close all
 
-addpath ('../pos_utilities');
+addpath ('../utilities');
 
 % Number of trials
-max_run = 1;
+max_run = 1000;
 max_epoch = 1;
 
 % Decide to experiemnt with Robust or Worst Solution
@@ -38,6 +38,10 @@ ub = 100;
 %///////////////////////////////////////////////////////////////////////%
 rs = zeros(1, max_epoch);
 ws = zeros(1, max_epoch);
+
+% Load data
+data = load('coord_normals.mat');
+fixed_T = load('fixed_trns.mat');
 for epoch = 1:max_epoch
     r_success = 0;
     w_success = 0;
@@ -49,15 +53,11 @@ for epoch = 1:max_epoch
         qang_r = robust_sol + gn;
         qang_w = worst_sol + gn;
 
-        % Load data
-        data = load('coord_normals.mat');
-        fixed_T = load('fixed_trns.mat');
-
         % Check collision with robust and worst solutions
         [success_cnt, base_blk_vertx, base_lp_vertx, base_rp_vertx] = check_success(qang_r, fixed_T, data, base_T_block);
         r_success = r_success + success_cnt;
-        %[success_cnt, base_blk_vertx, base_lp_vertx, base_rp_vertx] = check_success(qang_w, fixed_T, data, base_T_block);
-        %w_success = w_success + success_cnt;
+        [success_cnt, base_blk_vertx, base_lp_vertx, base_rp_vertx] = check_success(qang_w, fixed_T, data, base_T_block);
+        w_success = w_success + success_cnt;
     end
     rs(1, epoch) = r_success;
     ws(1, epoch) = w_success;
@@ -66,10 +66,11 @@ end
 fprintf('Success (robust): %d\n', r_success);
 fprintf('Success (worst): %d\n', w_success);
 
+figure(1)
 pts = 1:max_epoch;
-plot(pts, rs, 'b-', pts, ws, 'r-');
-hold on
-plot(pts, rs, 'bo', pts, ws, 'ro');
+plot(pts, rs, 'o-', pts, ws, 'o-');
+% hold on
+% plot(pts, rs, 'bo', pts, ws, 'ro');
 xlabel('Epochs')
 ylabel('Success count')
 title('Robust and Worst solution performance')
@@ -81,6 +82,7 @@ bx_data = base_blk_vertx(1:2, [7 4 3 6 7]);
 lp_data = base_lp_vertx(1:2, [7 4 3 6 7]);
 rp_data = base_rp_vertx(1:2, [7 4 3 6 7]);
 
+figure(2)
 patch(bx_data(1, :), bx_data(2, :), 'r');
 hold on
 patch(lp_data(1, :), lp_data(2, :), 'b');
@@ -94,11 +96,11 @@ legend('box', 'lp', 'rp')
 title('Collision check')
 
 % % Plot 3D shapes
-% figure(2)
-% box3d(base_blk_vertx, 1);
-% box3d(base_lp_vertx, 2);
-% box3d(base_rp_vertx, 2);
-% view(-127, 2);
+figure(3)
+box3d(base_blk_vertx, 1);
+box3d(base_lp_vertx, 2);
+box3d(base_rp_vertx, 2);
+view(-127, 2);
 %% 
 
 
