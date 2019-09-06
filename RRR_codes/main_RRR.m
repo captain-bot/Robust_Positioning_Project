@@ -79,6 +79,12 @@ else
     sol = sol_vec(1, :, (I+1)/2);
 end
 
+if mod(I_max, 2) == 0
+    sol_worst = sol_vec(2, :, I_max/2);
+else
+    sol_worst = sol_vec(1, :, (I_max+1)/2);
+end
+
 % Maximum Error in Best and Worst Cases
 error_best = sqrt(dq'*dq*M);
 error_worst = sqrt(dq'*dq*M_max);
@@ -115,8 +121,11 @@ xlabel('x[m]')
 ylabel('y[m]')
 hold on
 
-[p1,p2,p3] = get_pts(sol(1), sol(2), sol(3), l1, l2, l3);
-PlotMinConfig(p1,p2,p3,xd,yd);
+[p1_b,p2_b,p3_b] = get_pts(sol(1), sol(2), sol(3), l1, l2, l3);
+[p1_w,p2_w,p3_w] = get_pts(sol_worst(1), sol_worst(2), sol_worst(3), l1, l2, l3);
+
+PlotMinConfig(p1_b, p2_b, p3_b, xd, yd);
+PlotMinConfig(p1_w, p2_w, p3_w, xd,yd);
 
 % Uncomment if interested in all solution
 % for i = 1:32

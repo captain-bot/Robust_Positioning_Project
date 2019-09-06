@@ -126,10 +126,10 @@ function [x1, x2, min_d] = check_colli(blk1_N, blk1_b, blk2_N, blk2_b)
     H(1:3, 4:end) = diag(-1*ones(1, 3));
     H(4:end, 1:3) = diag(-1*ones(1, 3));
 
-    opts = optimset('Display', 'off');
-    x = quadprog(H, f, A, b, [], [], [], [], [], opts);             % MATLAB's quadprog() function
+    opts = optimset('Display', 'off');                      % Processing display off
+    x = quadprog(H, f, A, b, [], [], [], [], [], opts);     % MATLAB's quadprog() function
     x1 = x(1:3); x2 = x(4:6);
-    fvalue = 0.5*(x'*H*x) + f'*x;         % objective value
+    fvalue = 0.5*(x'*H*x) + f'*x;                           % objective value
     fprintf('Objective value: %6.8f\n', fvalue);
     min_d = norm(x(1:3)-x(4:6));
     fprintf('Minimum dist between two blocks: %6.8f\n', min_d);
@@ -196,6 +196,7 @@ function [success_cnt, base_blk_vertx, base_lp_vertx, base_rp_vertx] = check_suc
 
     % Check collision between left plate and block
     [x_lp, x_lblk, min_dl] = check_colli(base_lpN, base_lp_bvec, base_bN, base_blk_bvec);
+    
     % Check collision between right plate and block
     [x_rp, x_rblk, min_dr] = check_colli(base_rpN, base_rp_bvec, base_bN, base_blk_bvec);
 

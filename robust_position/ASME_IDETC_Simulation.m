@@ -1,6 +1,6 @@
-clc
-clear all
-close all
+clc;
+clear;
+close all;
 
 % This piece of code computes and animates gripper grasping a block
 % phenomena. Depending on the needs, user mostly need to modify the
@@ -67,13 +67,13 @@ for num_run = 1:max_run
     if visual
         if num_run == 1
             figure(1)
-            xlim([0.66, 0.76])
-            ylim([0.30, 0.45])
+            xlim([0.68, 0.75])
+            ylim([0.32, 0.42])
             grid on
-            axis('equal')
-            xlabel('x base')
-            ylabel('y base')
-            title('other-IK: Success rate in simulation')            
+%             axis('equal')
+            xlabel('x base [m]')
+            ylabel('y base [m]')
+            title('Success rate for \Theta^-')            
         end
         
         % Plot box and gripper location in 2D
@@ -84,8 +84,8 @@ for num_run = 1:max_run
         f1 = patch(bx_data(1, :), bx_data(2, :), [0.940, 0.325, 0.098], 'FaceAlpha', 0.6);    
         f2 = patch(lp_data(1, :), lp_data(2, :), 'black', 'FaceAlpha', 0.8);
         f3 = patch(rp_data(1, :), rp_data(2, :), 'black', 'FaceAlpha', 0.8);
-        f4 = text(0.63, 0.44,  strcat("success count: ", num2str(r_success)));
-        f5 = text(0.75, 0.44,  strcat("Num of trials: ", num2str(num_run)));
+%         f4 = text(0.69, 0.31,  strcat("success count: ", num2str(r_success)));
+%         f5 = text(0.69, 0.32,  strcat("Num of trials: ", num2str(num_run)));
         
 %         % Uncomment below if your are using giff file
 %         % Capture the plot as an image 
@@ -100,7 +100,8 @@ for num_run = 1:max_run
 %         end 
 
         pause(0.05);        
-        delete(f1); delete(f2); delete(f3); delete(f4); delete(f5);        
+        delete(f1); delete(f2); delete(f3); 
+%         delete(f4); delete(f5);        
     end
 end
 fprintf("Total success rate: %f percent\n", (r_success/num_run)*100)

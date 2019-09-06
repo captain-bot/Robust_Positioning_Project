@@ -120,6 +120,9 @@ classdef mycls
             Iindex = [I_best I_worst];
             min_max_val = [M M_max];
             fprintf('Robust Solution: '); disp(ik_array(Iindex(1, 1), :));
+            fprintf("Robust eig_max: "); disp(M);
+            fprintf('Worst Solution: '); disp(ik_array(Iindex(1, 2), :));
+            fprintf("Worst eig_max: "); disp(M_max);
             % Store robust solution
             robust_sol = ik_array(Iindex(1, 1), :);
         end
@@ -157,6 +160,7 @@ classdef mycls
             min_max_val = [M M_max];
             fprintf('Robust Solution: '); disp(ik_array(Iindex(1, 1), :));
             fprintf('Worst Solution: '); disp(ik_array(Iindex(1, 2), :));
+            fprintf("Worst eig_max: "); disp(M_max);
             % Store robust solution
             robust_sol = ik_array(Iindex(1, 1), :);
         end
